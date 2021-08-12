@@ -1,2 +1,2 @@
-# Grobner Basis Calculator
+# Grobner Basis 
  
