@@ -1,11 +1,13 @@
 import re
-
+import numpy
 
 # Everything is done with the lexicographic ordering x > y > z > ...
 
 
-
 # separates polynomials into a list
+import numpy as np
+
+
 def polynomial(input):
     # parse for polynomials
     polynomials = []
@@ -51,29 +53,29 @@ def removeblankss(input):
     return lst
 
 
-def tuplelength(input):
-
-    tupledimension = 0
-    set = {}
-
+# how many variables are we in?
+def dimension(input):
+    global s
+    s = set()
 
     lst = list(input)
 
     for i in range(0, len(lst)):
-        if lst[i] == '(' or lst[i] == ')' or lst[i] == '+' or lst[i] == '-' or lst[i] == ',' or lst[i] == '^' or lst[i] == ' ' or lst[i] == '2' or lst[i] == '3':
+        if lst[i] == '(' or lst[i] == ')' or lst[i] == '+' or lst[i] == '-' or lst[i] == ',' or lst[i] == '^' or lst[
+            i] == ' ' or lst[i] == '2' or lst[i] == '3':
             continue
             # ignore
         else:
-            print(lst[i])
+            s.add(lst[i])
 
-    return len(set)
-
+    return len(s)
 
 
 def S(polynomial1, polynomial2):
-    # 1 < 2
-    print(polynomial1)
-    print(polynomial2)
+    # 1 <
+
+    # print(polynomial1)
+    # print(polynomial2)
 
     # search for the leading term
 
@@ -87,10 +89,46 @@ def S(polynomial1, polynomial2):
     else:
         leading_term_2 = polynomial2[1]
 
-    print(leading_term_1)
-    print(leading_term_2)
-
     # find powers in terms of tuples
+    tupledimension
+
+    find_power(leading_term_1, leading_term_2)
+
+
+def find_power(leading_term_1, leading_term_2):
+    lst1 = list(leading_term_1)
+    lst2 = list(leading_term_2)
+
+    filtered1 = {}
+    filtered2 = {}
+
+    for i in lst1:
+        if i == 'x' or i =='y':
+            filtered1[i] = 1
+
+    for i in lst2:
+        if i == 'x' or i =='y':
+            filtered2[i] = 1
+
+
+
+    #
+
+    counter = 0
+    while counter < len(lst2):
+        try:
+            lst2[counter+1]
+            if lst2[counter+1] == '^':
+                filtered2.update({lst2[counter], filtered2[lst2[counter]] + lst2[counter+2]-1})
+                print(filtered2['x'])
+                counter = counter+2
+        except:
+            continue
+
+        counter = counter+1
+
+    print(filtered1)
+    print(filtered2)
 
 
 
@@ -104,13 +142,12 @@ def computation(monomial_list):
 
 
 input = '(x - y^3 , -x^2 + xy^2)'
+tupledimension = dimension(input)
 
 polynomiallist = polynomial(input)
 monomiallist = monomial(polynomiallist)
 computation(monomiallist)
 
-print()
-print("Monomials: ")
-print(monomiallist)
-
-print(tuplelength(input))
+# print()
+# print("Monomials: ")
+# print(monomiallist)
