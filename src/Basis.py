@@ -110,10 +110,6 @@ def find_power(leading_term_1, leading_term_2):
         if i == 'x' or i =='y':
             filtered2[i] = 1
 
-
-
-    #
-
     counter = 0
     while counter < len(lst2):
         try:
