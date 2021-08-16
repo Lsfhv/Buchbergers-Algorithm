@@ -104,7 +104,6 @@ def Sfucntion(LCM, polynomial1, polynomial2):
     # S(P1,P2) = (M/LT1)P1 - (M/LT2)P2
 
 
-
 # find the leading term
 def LT(p1):
     for j in p1:
@@ -112,10 +111,85 @@ def LT(p1):
             if 'a' <= i <= 'z':
                 return j
 
+
+# will assume order is respected
 def addition(summand1, summand2):
-    
     return True
 
+
+# we want to restore the ordering on the monomials, assume no two monomials have same multidegree as we shall collect
+# like terms before doing this. we assume usual lexicographic ordering x > y > z etc. - not grlex or grevlex
+def restore_order(polynomial):
+    powers = []
+    ordered = []
+    signs = {}
+    # for i in polynomial:
+    #     if i == '+' or i == '-':
+    #         signs.update({i:})
+    #         continue
+    #     else:
+    #         powers.append(find_power(i))
+
+    for i in range(0,len(polynomial)):
+        if polynomial[i] == '+' or polynomial[i] == '-':
+            signs.update({polynomial[i+1]:polynomial[i]})
+            continue
+        else:
+            powers.append(find_power(polynomial[i]))
+
+
+    lenx = len(powers)
+    for i in range(0,lenx):
+        max = powers[0]['x']
+        counter = 0
+        for i in powers:
+            if max < i['x']:
+                max = i['x']
+                counter = counter + 1
+                # pop the resulting max here somewhere and append it
+            else:
+                continue
+
+        ordered.append(powers.pop(counter))
+
+
+    polyordered = []
+
+    # matching powers
+
+    for i in polynomial:
+        if i == '+' or i == '-':
+            continue
+        else:
+            for j in range(0,len(ordered)):
+                if find_power(i) == ordered[j]:
+                    polyordered.insert(j,i)
+
+    polyorderedre = []
+
+    lenx = len(polyordered)
+    for i in range(0,lenx):
+        try:
+            polyorderedre.append(signs[polyordered[i]])
+            polyorderedre.append(polyordered[i])
+        except:
+            polyorderedre.append(polyordered[i])
+    print("Input: ", polynomial, "output: ",polyorderedre)
+    return polyorderedre
+
+
+# finds power of terms as a dictionary
+def find_power(monomial):
+    first = {}
+    for i in monomial:
+        if ('a' <= i <= 'z') or ('A' <= i <= 'Z'):
+            first.update({i: 1})
+
+    for i in range(0, len(monomial)):
+        if monomial[i] == '^':
+            first.update({monomial[i - 1]: int(monomial[i + 1])})
+
+    return first
 
 
 # monomial1 = 'x^2y^5'
@@ -126,5 +200,6 @@ def addition(summand1, summand2):
 
 input = '(x^2y^5 - y^3 , -x^3y^3 + xy^2)'
 monomial_list = monomial(polynomial(input))
-find_least_common_monic_term( ( monomial_list[0])[0],(monomial_list[1])[1] ,monomial_list[0], monomial_list[1])
-
+# find_least_common_monic_term((monomial_list[0])[0], (monomial_list[1])[1], monomial_list[0], monomial_list[1])
+x = ['-', 'x^2y^3', '+', 'x^5y^4', '-', 'x^4y^2']
+restore_order(x)
