@@ -26,6 +26,7 @@ def monomial(input):
     monomials = []
 
     for i in input:
+        print(i.split())
         monomials.append(i.split())
 
     for i in monomials:
@@ -46,6 +47,14 @@ def monomial(input):
 
 
 def Sfucntion(polynomial1, polynomial2):
+    set1 = {"sign": "+", "LT": "x^2y^5"}
+    set2 = {"sign": "-", "LT": "y^3"}
+
+    ply1 = [set1, set2]
+    set1 = {"sign": "-", "LT": "x^3y^3"}
+    set2 = {"sign": "+", "LT": "xy^2"}
+    ply2 = [set1, set2]
+
     polynomial1 = restore_order(polynomial1)
     polynomial2 = restore_order(polynomial2)
     print("Polynomial 1:", polynomial1, "Polynomial 2: ", polynomial2)
@@ -60,25 +69,35 @@ def Sfucntion(polynomial1, polynomial2):
     # do all computation here? push evertyhign above out lter
     # and LT needs to support sign
 
-    # division(lcm,lt1)
-    multiplication(leadingterm1,leadingterm2)
+    x1 = division(lcm, lt1)
+    x2 = division(lcm, lt2)
+    print(x1,x2)
+    result = []
+
+    for i in ply1:
+        for j in ply2:
+            result.append(multiplication(i,j))
+
+    multiplication(leadingterm1, leadingterm2)
 
     # The SFunction, cartesian product, ideal would collect like terms first
-
 
     # i thin yes
 
     # S(P1,P2) = (M/LT1)P1 - (M/LT2)P2
-#make divison respt sgn
-def division(dividend,divisor):
+
+
+# make divison respt sgn
+def division(dividend, divisor):
     x1 = find_power(dividend)
     x2 = find_power(divisor)
+
     resultstr = ""
     result = {}
     for i in x1:
         if x1[i] >= x2[i]:
             tmp = x1[i] - x2[i]
-            result.update({i:tmp})
+            result.update({i: tmp})
     for i in result:
         if result[i] == 0:
             continue
@@ -88,19 +107,28 @@ def division(dividend,divisor):
             resultstr = resultstr + str(result[i])
     return resultstr
 
+
 # multiplcation working?
-def multiplication(term1,term2):
+def multiplication(term1, term2):
     result = {}
+    returndict = {}
     x1 = find_power(term1["LT"])
     x2 = find_power(term2["LT"])
+
     if term1["sign"] == term2["sign"]:
         result.update({"sign": '+'})
     else:
         result.update({"sign": '-'})
+    returndict = {"sign": result["sign"]}
+    oeafyayd = ""
     for i in x1:
         result.update({i: x1[i] + x2[i]})
-    return 0
-
+        oeafyayd = oeafyayd + str(i)
+        oeafyayd = oeafyayd + "^"
+        oeafyayd = oeafyayd + str(x1[i] + x2[i])
+    # so result holds signs and powers
+    returndict.update({"mT": oeafyayd})
+    return returndict
 
 
 def LCM(LT1, LT2):
