@@ -45,68 +45,84 @@ def plyformat(ideal):
     return polynomials
 
 
-def buchbergersAlgorithm():
-    flag = True
+def buchbergersAlgorithm(polys):
+    length = len(polys)
+    generalDivision(Spolynomial(polys[0], polys[1]), polys.copy())
 
-    # while flag:
-    #     for i in range(0,len(plys)):
-    #         for j in range(i+1,len(plys)):
-    #             if i != j:
-    #                 x1 = Spolynomial(plys[i],plys[j])
-    #                 print("remainder", x1,"i",i,"j",j)
-    #                 print(plys)
-    #                 if len(x1) == 0:
-    #                     flag = False
-    #                 else:
-    #                     plys.append(x1)
-    x=Spolynomial(plys[0],plys[1])
-    plys.append(x)
-    print(Spolynomial(plys[1],plys[2]))
+    # if lenght chages we call it again but appended list
+
+
+def generalDivision(dividend, divisors):
+    remainder = []
+    print(dividend)
+    print(divisors)
+    print()
+    m1 = []
+    while len(dividend) != 0:
+        flag = False
+        lt = dividend[0]
+
+        # check for divisibility
+        for i in divisors:
+
+            if decompose(lt["mT"])['x'] >= decompose(i[0]['mT'])['x'] and decompose(lt["mT"])['y'] >= decompose(
+                    i[0]['mT'])['y']:
+
+                d = difference(dividend, i)
+                for j in i:
+                    dividend.append(multiplication(d, j))
+                print(dividend)
+                # addition(dividend)
+                # print("dividend",dividend)
+                flag = True
+        if not flag:
+            remainder.append(lt)
+            dividend.pop(0)
+
+    return remainder
+
+
+def difference(p1, p2):
+    """Calculates the difference so we can divide"""
+    xs = decompose(p1[0]["mT"])['x'] - decompose(p2[0]["mT"])['x']
+    ys = decompose(p1[0]["mT"])['y'] - decompose(p2[0]["mT"])['y']
+    rtnstr = ""
+    if xs != 0:
+        rtnstr = rtnstr + 'x'
+        rtnstr = rtnstr + '^'
+        rtnstr = rtnstr + str(xs)
+
+    if ys != 0:
+        rtnstr = rtnstr + 'y'
+        rtnstr = rtnstr + '^'
+        rtnstr = rtnstr + str(ys)
+
+    return {"sign": '-', "mT": rtnstr}
+
 
 def Spolynomial(ply1, ply2):
     r1 = []
     lcm = LCM(ply1[0], ply2[0])
-
     m1 = division(lcm, ply1[0])
     m2 = division(lcm, ply2[0])
+
+    for i in ply2:
+        if i["sign"] == '+':
+            i["sign"] = '-'
+        else:
+            i["sign"] = '+'
     for i in ply1:
         r1.append(multiplication(m1, i))
     for i in ply2:
         r1.append(multiplication(m2, i))
 
     result = addition(r1)
-    lst = []
-    for i in reversed(restore_order(result)):
-        lst.append(i)
-
-    print("Lst",lst)
-    return generalDivision(lst)
-
-
-def generalDivision(dividend):
-    remainder = []
-    quotients = []
-    flag = False
-    for i in dividend:
-        for j in plys:
-            x = LCM(i, j[0])
-            if find_power(x["mT"])['x'] == find_power(i["mT"])['x'] and find_power(x["mT"])['y'] == find_power(i["mT"])['y']:
-                print(i, j[0])
-
-                print("divide")
-                flag = True
-            else:
-                continue
-        if flag:
-            remainder.append(i)
-
-    print(remainder)
-    return remainder
+    return restore_order(result)
 
 
 def division(dividend, divisor):
-    x1 = find_power(dividend["mT"])
-    x2 = find_power(divisor["mT"])
+    x1 = decompose(dividend["mT"])
+    x2 = decompose(divisor["mT"])
 
     resultstr = ""
     result = {}
@@ -121,16 +137,18 @@ def division(dividend, divisor):
             resultstr = resultstr + str(i)
             resultstr = resultstr + "^"
             resultstr = resultstr + str(result[i])
-
-    resltt = {"sign": '+', "mT": resultstr}
+    if dividend["sign"] == divisor["sign"]:
+        resltt = {"sign": '+', "mT": resultstr}
+    else:
+        resltt = {"sign": '-', "mT": resultstr}
     return resltt
 
 
 def multiplication(term1, term2):
     """Multiplication"""
     result = {}
-    x1 = find_power(term1["mT"])
-    x2 = find_power(term2["mT"])
+    x1 = decompose(term1["mT"])
+    x2 = decompose(term2["mT"])
 
     if term1["sign"] == term2["sign"]:
         result.update({"sign": '+'})
@@ -156,7 +174,7 @@ def addition(r1) -> list:
     for i in range(0, len(r1)):
         for j in range(0, len(r1)):
             if i != j:
-                if find_power(r1[i]["mT"]) == find_power(r1[j]["mT"]):
+                if decompose(r1[i]["mT"]) == decompose(r1[j]["mT"]):
 
                     if r1[i]["mT"][0].isdigit():
                         # coeffs is not 1 support coefficients, might not actually work
@@ -197,9 +215,10 @@ def LCM(lt1, lt2):
     :return {"sign": + or -}, {"mT": x^iy^j}"""
     LCM = {}
     LCMstr = ""
-    x1 = find_power(lt1["mT"])
-    x2 = find_power(lt2["mT"])
+    x1 = decompose(lt1["mT"])
+    x2 = decompose(lt2["mT"])
     x1key = list(x1.keys())
+    x1key.remove('c')
     for i in x1key:
         if x1[i] > x2[i]:
             LCM.update({i: x1[i]})
@@ -210,19 +229,23 @@ def LCM(lt1, lt2):
         LCMstr = LCMstr + '^'
         LCMstr = LCMstr + str(LCM[i])
     LCM = {"sign": '+', "mT": LCMstr}
-
     return LCM
 
 
-def find_power(monomial):
+def decompose(monomial):
     """Finds the powers in an accessible form
     :return {variable: exponent}"""
     first = {}
+    first.update({'c': 1})
     first.update({'x': 0})
     first.update({'y': 0})
+    counter = 0
     for i in monomial:
         if ('a' <= i <= 'z') or ('A' <= i <= 'Z'):
+            counter = counter + 1
             first.update({i: 1})
+        elif 50 <= ord(i) <= 57 and counter == 0:
+            first.update({'c': int(i)})
 
     for i in range(0, len(monomial)):
         if monomial[i] == '^':
@@ -231,26 +254,38 @@ def find_power(monomial):
     return first
 
 
-def restore_order(r1):
-    """Restores the ordering on monomials (Lexicographic)"""
-    variables = ['x', 'y']
-    for i in range(0, len(r1) - 1):
-        if int(find_power(r1[i]["mT"])[variables[0]]) < int(find_power(r1[i + 1]["mT"])[variables[0]]):
-            continue
-        elif int(find_power(r1[i]["mT"])[variables[0]]) > int(find_power(r1[i + 1]["mT"])[variables[0]]):
-            continue
-        else:
-            if int(find_power(r1[i]["mT"])[variables[1]]) < int(find_power(r1[i + 1]["mT"])[variables[1]]):
-                continue
+def restore_order(x):
+    rtn = []
+    for i in range(0, len(x) - 1):
+        if decompose(x[i]["mT"])['x'] > decompose(x[i + 1]["mT"])['x']:
+            x[i], x[i + 1] = x[i + 1], x[i]
+    for i in reversed(x):
+        rtn.append(i)
+    return rtn
 
-            elif int(find_power(r1[i]["mT"])[variables[1]]) > int(find_power(r1[i + 1]["mT"])[variables[1]]):
-                continue
 
-    return r1
+def collectliketerms(r1):
+    for i in range(0, len(r1)):
+        for j in range(0, len(r1)):
+            if i != j:
+                if same(i["mT"], j["mT"]):
+                    # finnd power for c and use sign to add em
+                    return 0
+
+
+def same(t1, t2):
+    x1 = decompose(t1)
+    x2 = decompose(t2)
+    if x1['x'] == x2['x'] and x1['y'] == x1['y']:
+        return True
+    else:
+        return False
 
 
 ideal = '(+x^2y^5 - y^3 , -x^3y^3 + xy^2)'
-plys = plyformat(ideal)
-# buchbergersAlgorithm()
-plys.append(({"sign": '+', "mT": 'xy^4'}, {"sign": '-', "mT": 'xy^3'}))
-generalDivision(({'sign': '+', 'mT': 'x^3y^3'}, {'sign': '-', 'mT': 'x^1y^3'}))
+polynomials = plyformat(ideal)
+# buchbergersAlgorithm(polynomials.copy())
+generalDivision(([{'sign': '+', 'mT': 'x^2y^4'}, {'sign': '-', 'mT': 'x^0y^3'}]),
+                [[{'sign': '+', 'mT': 'x^2y^5'}, {'sign': '-', 'mT': 'y^3'}],
+                 [{'sign': '+', 'mT': 'x^3y^3'}, {'sign': '-', 'mT': 'xy^2'}],
+                 [{'sign': '+', 'mT': 'x^1y^4'}, {'sign': '-', 'mT': 'x^1y^3'}]])

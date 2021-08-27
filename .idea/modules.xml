@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Grobner-Basis-Calculator.iml" filepath="$PROJECT_DIR$/.idea/Grobner-Basis-Calculator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../backtest/.idea/backtest.iml" filepath="$PROJECT_DIR$/../../backtest/.idea/backtest.iml" />
     </modules>
   </component>
 </project>
