@@ -265,7 +265,6 @@ def division(dividend, divisor):
 
 
 def Spolynomial(ply1, ply2):
-
     r1 = []
     lcm = LCM(ply1[0], ply2[0])
     m1 = division(lcm, ply1[0])
@@ -303,10 +302,11 @@ def buchbergersAlgorithm(polys):
             cartesianproducts.append([i, j])
             if not flag:
                 break
-
     return polys
 
-
+print("*****Find the Gröbner Basis of an ideal in a polynomail ring in two variables*****")
+print(">>", end= '')
 x = input()
 y = buchbergersAlgorithm(plyformat(x).copy())
-print(y)
+print("Gröbner Basis: ", y)
+print("Reduced Gröbner Basis: ")
