@@ -1,3 +1,4 @@
+
 # Gröbner Basis 
 
 An implementation of Buchbergers algorithm 
@@ -6,7 +7,7 @@ ring over the rationals.
 For proof of the algorithm please refer to 
 9.26 in Abstract Algebra by Dummit and Foote.
 Can be extended to n variables and extensons of the rationals. 
- 
+
 Format: 
         (f(x_1,x_2), ... , f_n(x_1, x_2))
 Output:    
