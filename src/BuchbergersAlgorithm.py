@@ -3,17 +3,12 @@ import numpy
 
 
 def plyformat(ideal):
-    """Takes an Ideal and seperates by polynomial stored with sign
-    [p1,p2,p3] pi = [{"sign": ,}, {"mT": }]
-
-    """
     polynomials = []
     x = re.split('\(|\)|,', ideal)
     lst = []
     for i in x:
         if i != '':
             lst.append(i)
-    noply = len(lst)
     x.clear()
     for i in lst:
         x.append(i.split())
@@ -292,7 +287,7 @@ def buchbergersAlgorithm(polys):
         flag = True
         for i in range(0, len(polys)):
             for j in range(0, len(polys)):
-                if i != j and ([i,j] not in cartesianproducts):
+                if i != j and ([i, j] not in cartesianproducts):
                     sp = Spolynomial(polys[i].copy(), polys[j].copy())
                     d = generalDivision(sp.copy(), polys.copy())
                     if len(d) != 0:
@@ -304,9 +299,77 @@ def buchbergersAlgorithm(polys):
                 break
     return polys
 
+
+def reduced(ply):
+    flag = False
+    while not flag:
+        flag = True
+        for i in range(0, len(ply)):
+            for j in range(0, len(ply)):
+                if i != j:
+                    if is_divisible(ply[i], ply[j]):
+                        ply.pop(j)
+                        flag = False
+                        break
+            if not flag:
+                break
+    return ply
+
+
+def is_divisible(ply1, ply2):
+    """Can ply1 divide ply2?"""
+    flag = False
+    x1 = find_power(ply1[0]["mT"])
+    x2 = find_power(ply2[0]["mT"])
+    keys = list(x1.keys())
+    for u in keys:
+        if x1[u] > x2[u]:
+            flag = True
+
+    if flag:
+        return False
+    else:
+        return True
+
+
+def reconstruction(ply):
+    def clean(j):
+        # if x or y power are 0 remove them, if all 0 just let the coefficent remain
+        x1 = find_power(j)
+        keys = list(x1.keys())
+        lst = list(j)
+        for u in keys:
+            if u != 'c':
+                if x1[u] == 0:
+                    for i in range(0, len(lst)):
+                        if lst[i] == u:
+                            lst.pop(i)
+                            lst.pop(i)
+                            lst.pop(i)
+                            break
+
+        if len(lst) == 0:
+            lst.append(x1['c'])
+        rtnstr = ""
+        for i in lst:
+            rtnstr = rtnstr + str(i)
+        return rtnstr
+
+    rtnstr = "("
+    for i in range(0,len(ply)):
+        for j in range(0,len(ply[i])):
+            rtnstr = rtnstr + str(ply[i][j]["sign"]) + " " + str(clean(ply[i][j]["mT"])) + " "
+        if i != len(ply) - 1:
+            rtnstr = rtnstr + ","
+
+    return rtnstr + ")"
+
+
 print("*****Find the Gröbner Basis of an ideal in a polynomail ring in two variables*****")
-print(">>", end= '')
+print(">>", end='')
 x = input()
 y = buchbergersAlgorithm(plyformat(x).copy())
-print("Gröbner Basis: ", y)
-print("Reduced Gröbner Basis: ")
+print("Gröbner Basis: ", reconstruction(y))
+print("Reduced Gröbner Basis: ", reconstruction(reduced(y)))
+
+
